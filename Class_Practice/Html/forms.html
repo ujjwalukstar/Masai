@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forms</title>
+</head>
+<body>
+    <!-- size helps in inc or dec the input size -->
+    <form action="" method="get">
+        <div>
+            <label for="name">Enter Your Name:</label>
+            <input type="text" name="name" id="name" required size="10" minlength="4" maxlength="8"/>
+        </div>
+
+        <div>
+            <label for="email">Enter Your Email:</label>
+            <input type="email" name="email" id="email" required />
+        </div>
+
+        <div>
+            <label for="checkbox">Go Ahead</label>
+            <input type="checkbox" name="checkbox" id="checkbox" required>
+        </div>
+
+        <div>
+            <label for="color">Choose Color</label>
+            <input type="color" name="color" id="color">
+        </div>
+
+        <div>
+            <label for="date">Date</label>
+            <input type="date" name="date" id="date" required>
+        </div>
+
+        <div>
+            <label for="datetime-local">DateTime</label>
+            <input type="datetime-local" name="datetime-local" id="datetime-local" required>
+        </div>
+
+        <div>
+            <label for="number">Enter Number:</label>
+            <input type="number" name="number" id="number" required>
+        </div>
+
+        <div>
+            <fieldset>
+                <legend>Select a maintenance drone:</legend>
+
+        <div>  
+            <label for="huey">Heuy</label>
+            <input type="radio" name="drone" id="radio" >
+        </div> 
+
+        <div>  
+            <label for="dewey">Dewey</label>
+            <input type="radio" name="drone" id="dewey" >
+        </div> 
+
+        <div>  
+            <label for="louis">Louis</label>
+            <input type="radio" name="drone" id="louis" >
+        </div> 
+
+        </fieldset>
+        </div>
+        <div>  
+            <label for="ph"></label>Enter Phone Number:</label>
+            <input type="tel" name="ph" id="ph">
+        </div> 
+        <div>
+            <input type="submit" value="Submit" required />
+            <!-- <button>Submit</button> -->
+        </div>
+    </form>
+    
+</body>
+</html>
