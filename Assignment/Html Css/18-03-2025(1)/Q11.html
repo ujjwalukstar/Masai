@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Box Model</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    .box {
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    .box-1 {
+      width: 150px;
+      padding: 20px;
+      border: 5px solid red;
+      margin: 10px;
+      box-sizing: content-box;
+      background-color: lightblue;
+    }
+
+    .box-2 {
+      width: 150px;
+      padding: 20px;
+      border: 5px solid green;
+      margin: 10px;
+      box-sizing: border-box;
+      background-color: lightgreen;
+    }
+
+    .box-3 {
+      width: 150px;
+      padding: 20px;
+      border: 5px solid blue;
+      margin: 10px;
+      background-color: lightcoral;
+    }
+  </style>
+</head>
+<body>
+  <div class="box box-1">Box 1: Content-Box</div>
+  <div class="box box-2">Box 2: Border-Box</div>
+  <div class="box box-3">Box 3: No Box-Sizing</div>
+</body>
+</html>

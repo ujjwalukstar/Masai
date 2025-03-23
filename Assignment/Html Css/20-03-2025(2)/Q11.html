@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Layout with Media Queries</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .item {
+            flex: 1 1 100%; /* Single column by default (mobile) */
+            background: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            min-height: 150px;
+        }
+
+        /* Tablet: 2 columns for screens > 768px */
+        @media (min-width: 768px) {
+            .item {
+                flex: 1 1 calc(50% - 10px); /* Two equal columns */
+            }
+        }
+
+        /* Desktop: 3 columns for screens > 1024px */
+        @media (min-width: 1024px) {
+            .item {
+                flex: 1 1 calc(33.33% - 13.33px); /* Three equal columns */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="item">Item 1</div>
+        <div class="item">Item 2</div>
+        <div class="item">Item 3</div>
+        <div class="item">Item 4</div>
+    </div>
+</body>
+</html>

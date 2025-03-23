@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Layout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; /* Added to maintain dimensions */
+        }
+
+        body {
+            min-height: 100vh; /* Ensure body takes full height */
+            position: relative; /* For absolute positioning context */
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .container {
+            display: flex; /* Changed from block to flex for proper alignment */
+            justify-content: center;
+            gap: 20px; /* Added spacing between boxes */
+            padding: 20px;
+            flex-wrap: wrap; /* Added for responsiveness */
+        }
+
+        .box {
+            width: 100px;
+            height: 100px;
+            background: lightblue;
+            border: 1px solid black;
+            margin: 0; /* Fixed negative margin causing overlap */
+            position: relative; /* Changed from absolute to prevent overlap */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .text {
+            position: absolute; /* Changed from fixed to flow with content */
+            left: 50%;
+            transform: translateX(-50%); /* Center properly */
+            bottom: 20px; /* Position at bottom with spacing */
+            top: auto; /* Remove top:0 to fix position */
+            background: white; /* Added for readability */
+            padding: 10px;
+        }
+
+        /* Media query for responsiveness */
+        @media (max-width: 400px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .box {
+                width: 80%; /* Adjust width for smaller screens */
+                max-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Debugging Task</h1>
+    <div class="container">
+        <div class="box">Box 1</div>
+        <div class="box">Box 2</div>
+        <div class="box">Box 3</div>
+    </div>
+    <p class="text">Fix my position!</p>
+</body>
+</html>

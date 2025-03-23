@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mastering CSS Display Properties</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+    }
+
+    .block-element {
+      display: block;
+      width: 100%;
+      border: 2px solid blue;
+      background-color: lightblue;
+      margin-bottom: 10px;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .inline-element {
+      display: inline;
+      background-color: yellow;
+      padding: 5px;
+      border: 1px solid orange;
+    }
+
+    .inline-block-element {
+      display: inline-block;
+      width: 100px;
+      height: 50px;
+      border: 2px solid green;
+      background-color: lightgreen;
+      text-align: center;
+      line-height: 50px;
+      margin-right: 10px;
+    }
+
+    .hidden-element {
+      display: none;
+      background-color: pink;
+      border: 2px solid red;
+      padding: 10px;
+    }
+
+    .toggle-button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background-color: lightcoral;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mastering CSS Display Properties</h1>
+
+  <div class="block-element">Block Element (Full-width)</div>
+
+  <p>
+    Inline elements example:
+    <span class="inline-element">Inline Text</span>
+    <span class="inline-element">Another Inline Text</span>
+  </p>
+
+  <div class="inline-block-element">Inline-Block</div>
+  <div class="inline-block-element">Inline-Block</div>
+
+  <div class="hidden-element" id="hiddenElement">You can toggle me!</div>
+
+  <button class="toggle-button" onclick="toggleVisibility()">Toggle Hidden Element</button>
+
+  <script>
+    function toggleVisibility() {
+      const hiddenElement = document.getElementById('hiddenElement');
+      if (hiddenElement.style.display === 'none') {
+        hiddenElement.style.display = 'block';
+      } else {
+        hiddenElement.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

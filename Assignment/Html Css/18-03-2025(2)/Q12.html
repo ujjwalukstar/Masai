@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exploring Flex-Direction</title>
+  <style>
+    .container {
+      display: flex; /* Enables Flexbox layout */
+      flex-direction: row; /* Items are initially arranged in a row (horizontal) */
+      justify-content: space-around; /* Optional: distributes items with equal space around */
+      align-items: center; /* Optional: aligns items vertically along the cross-axis */
+      border: 2px solid #333; /* For visualization */
+      height: 200px; /* Sets height for better visualization */
+    }
+
+    .item {
+      padding: 20px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+    }
+
+    /* Changes layout to column */
+    @media (max-width: 600px) {
+      .container {
+        flex-direction: column; /* Stacks items vertically on smaller screens */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="item">Item 1</div>
+    <div class="item">Item 2</div>
+    <div class="item">Item 3</div>
+    <div class="item">Item 4</div>
+  </div>
+</body>
+</html>
