@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L0 - Creating and Removing Elements</title>
+  <style>
+    /* Add some styling for better visualization */
+    #content {
+      border: 2px solid black;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    button {
+      margin: 5px;
+      padding: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="content"></div>
+  <button id="add-paragraph">Add Paragraph</button>
+  <button id="remove-paragraph">Remove Last Paragraph</button>
+
+  <script>
+    // Select the necessary elements
+    const contentDiv = document.getElementById('content');
+    const addParagraphButton = document.getElementById('add-paragraph');
+    const removeParagraphButton = document.getElementById('remove-paragraph');
+
+    // Add Paragraph functionality
+    addParagraphButton.addEventListener('click', () => {
+      const newParagraph = document.createElement('p'); // Create a paragraph element
+      newParagraph.textContent = 'This is a new paragraph.'; // Set its text content
+      contentDiv.appendChild(newParagraph); // Append it to the div
+    });
+
+    // Remove Last Paragraph functionality
+    removeParagraphButton.addEventListener('click', () => {
+      const lastParagraph = contentDiv.lastChild; // Get the last child of the div
+      if (lastParagraph) {
+        contentDiv.removeChild(lastParagraph); // Remove the last paragraph
+      }
+    });
+  </script>
+</body>
+</html>

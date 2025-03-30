@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Todo List</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    input[type="text"] {
+      margin-bottom: 10px;
+      padding: 10px;
+      width: 100%;
+      font-size: 16px;
+    }
+    button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .task {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .task.completed span {
+      text-decoration: line-through;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <h1>Enhanced Todo List</h1>
+  <input id="task-input" type="text" placeholder="Enter a new task">
+  <button id="add-task">Add Task</button>
+  <input id="search-input" type="text" placeholder="Search tasks">
+  <ul id="task-list"></ul>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || []; // Load tasks or initialize empty array
+
+    const taskInput = document.getElementById('task-input');
+    const searchInput = document.getElementById('search-input');
+    const addTaskButton = document.getElementById('add-task');
+    const taskList = document.getElementById('task-list');
+
+    // Render tasks dynamically
+    function renderTasks(filter = '') {
+      taskList.innerHTML = ''; // Clear current list
+
+      tasks
+        .filter(task => task.text.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(task => {
+          const li = document.createElement('li');
+          li.className = `task ${task.completed ? 'completed' : ''}`;
+          li.dataset.id = task.id;
+
+          const taskText = document.createElement('span');
+          taskText.textContent = task.text;
+
+          const toggleButton = document.createElement('button');
+          toggleButton.textContent = task.completed ? 'Mark Incomplete' : 'Mark Complete';
+          toggleButton.addEventListener('click', () => toggleTaskCompletion(task.id));
+
+          const deleteButton = document.createElement('button');
+          deleteButton.textContent = 'Delete';
+          deleteButton.addEventListener('click', () => deleteTask(task.id));
+
+          li.appendChild(taskText);
+          li.appendChild(toggleButton);
+          li.appendChild(deleteButton);
+          taskList.appendChild(li);
+        });
+    }
+
+    // Add new task
+    function addTask() {
+      const taskText = taskInput.value.trim();
+      if (taskText === '') {
+        alert('Task cannot be empty!');
+        return;
+      }
+
+      const newTask = {
+        id: Date.now().toString(), // Generate unique ID
+        text: taskText,
+        completed: false
+      };
+
+      tasks.push(newTask);
+      localStorage.setItem('tasks', JSON.stringify(tasks)); // Save to localStorage
+      taskInput.value = ''; // Clear input
+      renderTasks();
+    }
+
+    // Toggle task completion
+    function toggleTaskCompletion(id) {
+      tasks = tasks.map(task =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      );
+      localStorage.setItem('tasks', JSON.stringify(tasks)); // Persist changes
+      renderTasks();
+    }
+
+    // Delete a task
+    function deleteTask(id) {
+      tasks = tasks.filter(task => task.id !== id);
+      localStorage.setItem('tasks', JSON.stringify(tasks)); // Persist changes
+      renderTasks();
+    }
+
+    // Filter tasks based on search
+    searchInput.addEventListener('input', () => {
+      renderTasks(searchInput.value); // Filter dynamically
+    });
+
+    // Event listener for adding tasks
+    addTaskButton.addEventListener('click', addTask);
+
+    // Initial render on page load
+    renderTasks();
+  </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L0 - Basic DOM Manipulation</title>
+  <style>
+    /* Styles for odd and even <li> elements */
+    .odd {
+      font-weight: bold;
+      color: blue;
+    }
+
+    .even {
+      font-style: italic;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Basic DOM Manipulation</h1>
+  <ul id="item-list">
+    <li class="odd">Item 1</li>
+    <li class="even">Item 2</li>
+    <li class="odd">Item 3</li>
+  </ul>
+  <button id="add-item">Add Item</button>
+
+  <script>
+    // Select the <ul> element and the button
+    const ul = document.querySelector("#item-list");
+    const button = document.querySelector("#add-item");
+
+    // Add click event listener to the button
+    button.addEventListener("click", () => {
+      // Determine the new item's sequence number
+      const newItemNumber = ul.children.length + 1;
+
+      // Create a new <li> element
+      const newLi = document.createElement("li");
+      newLi.textContent = `New Item ${newItemNumber}`;
+
+      // Apply styles based on the item's sequence number
+      if (newItemNumber % 2 === 0) {
+        newLi.classList.add("even");
+      } else {
+        newLi.classList.add("odd");
+      }
+
+      // Append the new <li> to the <ul>
+      ul.appendChild(newLi);
+    });
+  </script>
+</body>
+</html>

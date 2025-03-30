@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L0 - Traversing the DOM</title>
+  <style>
+    /* Add some styles for better visibility */
+    #container {
+      padding: 10px;
+    }
+    ul {
+      list-style-type: none;
+      border: 1px solid black;
+      padding: 10px;
+    }
+    li {
+      cursor: pointer;
+      margin: 5px;
+      padding: 5px;
+      background-color: lightgray;
+    }
+    li:hover {
+      background-color: darkgray;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <ul id="list">
+      <li id="item1">Item 1</li>
+      <li id="item2">Item 2</li>
+      <li id="item3">Item 3</li>
+    </ul>
+  </div>
+
+  <script>
+    // Select the "Item 2" element
+    const item2 = document.getElementById('item2');
+
+    // Add click event listener to "Item 2"
+    item2.addEventListener('click', () => {
+      // Display the parent node's text content in an alert
+      const parentNode = item2.parentNode;
+      alert(`Parent content: ${parentNode.textContent}`);
+
+      // Log the text content of next and previous siblings
+      const previousSibling = item2.previousElementSibling;
+      const nextSibling = item2.nextElementSibling;
+
+      if (previousSibling) {
+        console.log(`Previous sibling content: ${previousSibling.textContent}`);
+      } else {
+        console.log('No previous sibling found.');
+      }
+
+      if (nextSibling) {
+        console.log(`Next sibling content: ${nextSibling.textContent}`);
+      } else {
+        console.log('No next sibling found.');
+      }
+    });
+  </script>
+</body>
+</html>

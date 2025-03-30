@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L1 - Event Propagation Exploration</title>
+  <style>
+    /* Add some styles for better visualization */
+    .outer, .middle, .inner {
+      border: 2px solid black;
+      margin: 10px;
+      padding: 20px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="outer" id="outer-div">
+    Outer Div
+    <button id="outer-button">Outer Button</button>
+    <div class="middle" id="middle-div">
+      Middle Div
+      <button id="middle-button">Middle Button</button>
+      <div class="inner" id="inner-div">
+        Inner Div
+        <button id="inner-button">Inner Button</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Utility to add event listeners for both bubbling and capturing phases
+    function addListener(element, name) {
+      // Bubbling phase
+      element.addEventListener('click', () => {
+        alert(`${name} clicked in bubbling phase`);
+      });
+
+      // Capturing phase
+      element.addEventListener('click', () => {
+        alert(`${name} clicked in capturing phase`);
+      }, true);
+    }
+
+    // Select all divs and buttons
+    const outerDiv = document.getElementById('outer-div');
+    const middleDiv = document.getElementById('middle-div');
+    const innerDiv = document.getElementById('inner-div');
+    const outerButton = document.getElementById('outer-button');
+    const middleButton = document.getElementById('middle-button');
+    const innerButton = document.getElementById('inner-button');
+
+    // Add listeners to divs
+    addListener(outerDiv, 'Outer Div');
+    addListener(middleDiv, 'Middle Div');
+    addListener(innerDiv, 'Inner Div');
+
+    // Add listeners to buttons
+    addListener(outerButton, 'Outer Button');
+    addListener(middleButton, 'Middle Button');
+
+    // Add event listener to the innermost button with propagation stop
+    innerButton.addEventListener('click', (event) => {
+      alert('Inner Button clicked (propagation stopped)');
+      event.stopPropagation(); // Stops event propagation
+    });
+  </script>
+</body>
+</html>

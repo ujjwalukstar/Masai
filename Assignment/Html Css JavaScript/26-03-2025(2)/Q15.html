@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L2 - Advanced Task Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #task-list {
+      margin-top: 20px;
+    }
+    .task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 5px 0;
+    }
+    button {
+      margin: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Advanced Task Manager</h1>
+  <input id="task-input" type="text" placeholder="Enter a task">
+  <button id="add-task">Add Task</button>
+  <div>
+    <button id="filter-all">All Tasks</button>
+    <button id="filter-completed">Completed Tasks</button>
+    <button id="filter-incomplete">Incomplete Tasks</button>
+    <button id="sort-tasks">Sort Alphabetically</button>
+  </div>
+  <h3>Task List</h3>
+  <ul id="task-list"></ul>
+  <h4>Task Summary</h4>
+  <p>Total tasks: <span id="total-tasks">0</span></p>
+  <p>Completed tasks: <span id="completed-tasks">0</span></p>
+  <p>Incomplete tasks: <span id="incomplete-tasks">0</span></p>
+
+  <script>
+    const taskInput = document.getElementById('task-input');
+    const addTaskButton = document.getElementById('add-task');
+    const taskList = document.getElementById('task-list');
+    const filterAllButton = document.getElementById('filter-all');
+    const filterCompletedButton = document.getElementById('filter-completed');
+    const filterIncompleteButton = document.getElementById('filter-incomplete');
+    const sortTasksButton = document.getElementById('sort-tasks');
+    const totalTasks = document.getElementById('total-tasks');
+    const completedTasks = document.getElementById('completed-tasks');
+    const incompleteTasks = document.getElementById('incomplete-tasks');
+
+    let tasks = []; // Array to store tasks
+
+    // Update task summary
+    const updateSummary = () => {
+      totalTasks.textContent = tasks.length;
+      completedTasks.textContent = tasks.filter(task => task.completed).length;
+      incompleteTasks.textContent = tasks.filter(task => !task.completed).length;
+    };
+
+    // Render tasks based on filter
+    const renderTasks = (filter = 'all') => {
+      taskList.innerHTML = ''; // Clear the list
+      const filteredTasks = tasks.filter(task => {
+        if (filter === 'completed') return task.completed;
+        if (filter === 'incomplete') return !task.completed;
+        return true;
+      });
+      filteredTasks.forEach(task => {
+        const taskItem = document.createElement('li');
+        taskItem.className = 'task-item';
+        taskItem.innerHTML = `
+          <span>${task.text}</span>
+          <input type="checkbox" ${task.completed ? 'checked' : ''} class="toggle-completion">
+          <button class="delete-task">Delete</button>
+        `;
+        taskItem.querySelector('.toggle-completion').addEventListener('change', () => {
+          task.completed = !task.completed;
+          updateSummary();
+          renderTasks(filter);
+        });
+        taskItem.querySelector('.delete-task').addEventListener('click', () => {
+          tasks = tasks.filter(t => t !== task);
+          updateSummary();
+          renderTasks(filter);
+        });
+        taskList.appendChild(taskItem);
+      });
+    };
+
+    // Add task functionality
+    addTaskButton.addEventListener('click', () => {
+      const taskText = taskInput.value.trim();
+      if (taskText) {
+        tasks.push({ text: taskText, completed: false });
+        taskInput.value = '';
+        updateSummary();
+        renderTasks();
+      }
+    });
+
+    // Filter tasks
+    filterAllButton.addEventListener('click', () => renderTasks('all'));
+    filterCompletedButton.addEventListener('click', () => renderTasks('completed'));
+    filterIncompleteButton.addEventListener('click', () => renderTasks('incomplete'));
+
+    // Sort tasks alphabetically
+    sortTasksButton.addEventListener('click', () => {
+      tasks.sort((a, b) => a.text.localeCompare(b.text));
+      renderTasks();
+    });
+
+    // Initial render
+    renderTasks();
+  </script>
+</body>
+</html>

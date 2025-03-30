@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L1 - Interactive DOM Manipulation</title>
+  <style>
+    /* Styling the div */
+    #interactive-div {
+      width: 300px;
+      height: 150px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 2px solid #000;
+      text-align: center;
+    }
+
+    /* Button styling */
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    /* Input styling */
+    input {
+      margin: 10px;
+      padding: 10px;
+      width: 200px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Interactive DOM Manipulation</h1>
+  <div>
+    <input type="text" id="color-input" placeholder="Enter a color name">
+    <input type="text" id="text-input" placeholder="Enter new text">
+    <button id="change-background">Change Background</button>
+    <button id="update-text">Update Text</button>
+  </div>
+  <div id="interactive-div">Initial Text Content</div>
+
+  <script>
+    // Select elements
+    const colorInput = document.getElementById("color-input");
+    const textInput = document.getElementById("text-input");
+    const changeBackgroundButton = document.getElementById("change-background");
+    const updateTextButton = document.getElementById("update-text");
+    const interactiveDiv = document.getElementById("interactive-div");
+
+    // Handle Change Background button click
+    changeBackgroundButton.addEventListener("click", () => {
+      const color = colorInput.value.trim();
+      if (color) {
+        // Try changing the background color
+        interactiveDiv.style.backgroundColor = color;
+        // Check if color was recognized
+        if (interactiveDiv.style.backgroundColor === "") {
+          alert("Invalid color name!");
+        }
+      } else {
+        alert("Please enter a color name!");
+      }
+    });
+
+    // Handle Update Text button click
+    updateTextButton.addEventListener("click", () => {
+      const newText = textInput.value.trim();
+      if (newText) {
+        interactiveDiv.textContent = newText;
+      } else {
+        alert("Please enter some text!");
+      }
+    });
+  </script>
+</body>
+</html>
