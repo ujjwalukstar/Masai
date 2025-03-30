@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Sharing Web Application</title>
+
+    <style>
+        .container ul li{
+            flex-direction: column;
+           list-style-type: none;
+           font-weight: 300;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="main_heading">
+        <div>
+            <h2>Recipe Sharing Web Application</h2>
+        </div>
+        
+    </header>
+
+    <nav class="container">
+        <!-- <div class="item"> -->
+          <ul class="items" style="display: flex; justify-content: center;gap: 20px;font-size: 20px;">
+                <li>Home</li>
+                <li>Add recipe</li>
+                <li>View Recipe</li>
+            </ul>
+        <!-- </div> -->
+    </nav>
+
+    <form>
+
+        <div>
+            <label for="text">Recipe Name:</label>
+            <input type="text" name="text" />
+        </div>
+
+        <div>
+            <label for="textarea">Ingredients:</label>
+            <input type="textarea" name="textarea"  />
+        </div>
+
+        <div>
+            <label for="dropdown">Category:</label>
+            <input type="dropdown" name="dropdown" />
+        </div>
+
+        <div>
+            <label for="textarea">Preparation Steps:</label>
+            <input type="textarea" name="textarea"  />
+        </div>
+        
+        <button>Submit</button>
+    </form>
+    
+</body>
+</html>
