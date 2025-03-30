@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Fetch App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      width: 300px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .error {
+      color: red;
+      font-size: 1.2rem;
+      margin-top: 20px;
+    }
+    .weather-info {
+      font-size: 1.2rem;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Weather App</h1>
+  <form id="weatherForm">
+    <input type="text" id="city" placeholder="Enter city name" required>
+    <button type="submit">Get Weather</button>
+  </form>
+  <div id="weather" class="weather-info"></div>
+  <div id="errorMessage" class="error" style="display: none;"></div>
+
+  <script>
+    const weatherForm = document.getElementById('weatherForm');
+    const cityInput = document.getElementById('city');
+    const weatherDisplay = document.getElementById('weather');
+    const errorMessage = document.getElementById('errorMessage');
+
+    weatherForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const city = cityInput.value.trim();
+
+      // Validate user input
+      if (!city) {
+        errorMessage.textContent = "City name cannot be empty!";
+        errorMessage.style.display = "block";
+        weatherDisplay.style.display = "none";
+        return;
+      }
+
+      try {
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=YOUR_API_KEY`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch weather data. Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Display weather info
+        weatherDisplay.style.display = "block";
+        errorMessage.style.display = "none";
+        weatherDisplay.innerHTML = `
+          <p><strong>City:</strong> ${data.name}</p>
+          <p><strong>Temperature:</strong> ${data.main.temp}°C</p>
+          <p><strong>Weather:</strong> ${data.weather[0].description}</p>
+        `;
+      } catch (error) {
+        // Handle errors gracefully
+        console.error("Error fetching weather data:", error);
+        errorMessage.textContent = "Unable to fetch weather data. Please check the city name or try again later.";
+        errorMessage.style.display = "block";
+        weatherDisplay.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
