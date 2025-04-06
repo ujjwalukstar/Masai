@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add User to Firebase</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 40px;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      margin: 10px;
+      width: 250px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    #message.success {
+      color: green;
+    }
+
+    #message.error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Add New User to Firebase</h1>
+
+  <form id="userForm">
+    <input type="text" id="name" placeholder="Enter Name" required />
+    <input type="email" id="email" placeholder="Enter Email" required />
+    <br />
+    <button type="submit">Add User</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script>
+    const databaseURL = "https://getxhired-default-rtdb.firebaseio.com/users.json";
+
+    document.getElementById("userForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const messageDiv = document.getElementById("message");
+
+      if (!name || !email) {
+        messageDiv.textContent = "Please fill out both fields.";
+        messageDiv.className = "error";
+        return;
+      }
+
+      const newUser = { name, email };
+
+      try {
+        const response = await fetch(databaseURL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(newUser)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        document.getElementById("userForm").reset();
+        messageDiv.textContent = "User added successfully!";
+        messageDiv.className = "success";
+      } catch (error) {
+        messageDiv.textContent = "Failed to add user: " + error.message;
+        messageDiv.className = "error";
+      }
+    });
+  </script>
+</body>
+</html>

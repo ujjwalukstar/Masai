@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Update Firebase User</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 40px;
+    }
+
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 70%;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    button {
+      padding: 6px 12px;
+      margin: 4px;
+      cursor: pointer;
+    }
+
+    form {
+      margin-top: 30px;
+    }
+
+    input {
+      padding: 10px;
+      margin: 10px;
+      width: 250px;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    #message.success {
+      color: green;
+    }
+
+    #message.error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Firebase Users</h1>
+
+  <div id="message"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Edit</th>
+      </tr>
+    </thead>
+    <tbody id="userTableBody">
+      <!-- User rows here -->
+    </tbody>
+  </table>
+
+  <form id="editForm" style="display: none;">
+    <h2>Edit User</h2>
+    <input type="text" id="editName" placeholder="Enter Name" required />
+    <input type="email" id="editEmail" placeholder="Enter Email" required />
+    <input type="hidden" id="editUserId" />
+    <br />
+    <button type="submit">Update</button>
+  </form>
+
+  <script>
+    const baseURL = "https://getxhired-default-rtdb.firebaseio.com/users";
+
+    async function fetchUsers() {
+      try {
+        const response = await fetch(`${baseURL}.json`);
+        const data = await response.json();
+        const tableBody = document.getElementById("userTableBody");
+        tableBody.innerHTML = "";
+
+        for (let key in data) {
+          const { name, email } = data[key];
+          const row = document.createElement("tr");
+
+          row.innerHTML = `
+            <td>${name}</td>
+            <td>${email}</td>
+            <td><button onclick="openEditForm('${key}', '${name}', '${email}')">Edit</button></td>
+          `;
+
+          tableBody.appendChild(row);
+        }
+      } catch (err) {
+        document.getElementById("message").textContent = "Failed to fetch users.";
+        document.getElementById("message").className = "error";
+      }
+    }
+
+    function openEditForm(id, name, email) {
+      document.getElementById("editForm").style.display = "block";
+      document.getElementById("editName").value = name;
+      document.getElementById("editEmail").value = email;
+      document.getElementById("editUserId").value = id;
+    }
+
+    document.getElementById("editForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const name = document.getElementById("editName").value.trim();
+      const email = document.getElementById("editEmail").value.trim();
+      const id = document.getElementById("editUserId").value;
+
+      try {
+        const response = await fetch(`${baseURL}/${id}.json`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name, email })
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to update user.");
+        }
+
+        document.getElementById("message").textContent = "User updated successfully!";
+        document.getElementById("message").className = "success";
+        document.getElementById("editForm").reset();
+        document.getElementById("editForm").style.display = "none";
+        fetchUsers();
+      } catch (error) {
+        document.getElementById("message").textContent = error.message;
+        document.getElementById("message").className = "error";
+      }
+    });
+
+    fetchUsers();
+  </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Library Management System</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    form input, select { margin: 5px; padding: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Library Management System</h1>
+
+  <form id="bookForm">
+    <input type="hidden" id="bookId" />
+    <input type="text" id="title" placeholder="Title" required />
+    <input type="text" id="author" placeholder="Author" required />
+    <input type="text" id="genre" placeholder="Genre" required />
+    <input type="number" id="publishedYear" placeholder="Published Year" required />
+    <select id="available">
+      <option value="true">Available</option>
+      <option value="false">Not Available</option>
+    </select>
+    <button type="submit">Submit</button>
+  </form>
+
+  <div style="margin-top: 20px;">
+    <label>Filter by Genre:</label>
+    <select id="genreFilter">
+      <option value="">All</option>
+      <option value="Science Fiction">Science Fiction</option>
+      <option value="Dystopian">Dystopian</option>
+    </select>
+
+    <label>Sort by:</label>
+    <select id="sortBy">
+      <option value="">None</option>
+      <option value="title">Title</option>
+      <option value="author">Author</option>
+      <option value="publishedYear">Year</option>
+    </select>
+  </div>
+
+  <table id="bookTable">
+    <thead>
+      <tr>
+        <th>Title</th><th>Author</th><th>Genre</th><th>Year</th><th>Available</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div style="margin-top:10px;">
+    <button onclick="prevPage()">Previous</button>
+    <span id="pageInfo"></span>
+    <button onclick="nextPage()">Next</button>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

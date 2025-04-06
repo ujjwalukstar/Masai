@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Scrolling</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            line-height: 1.6;
+        }
+
+        #gallery {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .photo-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .photo-card .title {
+            padding: 10px;
+            text-align: center;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #dc3545;
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 600px) {
+            #gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gallery"></div>
+
+    <script>
+        const gallery = document.getElementById('gallery');
+        const apiUrl = 'https://jsonplaceholder.typicode.com/photos';
+        const photosPerLoad = 10;
+        let currentPage = 1;
+        let isLoading = false;
+        let hasMore = true;
+
+        // Fetch photos from API
+        async function fetchPhotos(page) {
+            if (isLoading || !hasMore) return;
+
+            isLoading = true;
+            const loadingElement = document.createElement('div');
+            loadingElement.className = 'loading';
+            loadingElement.textContent = 'Loading more photos...';
+            gallery.appendChild(loadingElement);
+
+            try {
+                const response = await fetch(`${apiUrl}?_page=${page}&_limit=${photosPerLoad}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const photos = await response.json();
+
+                // Validate and render photos
+                if (photos.length === 0 || currentPage * photosPerLoad >= 50) {
+                    hasMore = false;
+                }
+
+                renderPhotos(photos);
+                currentPage++;
+            } catch (error) {
+                console.error('Error fetching photos:', error);
+                gallery.innerHTML = `<div class="error">Error loading photos: ${error.message}</div>`;
+                hasMore = false;
+            } finally {
+                gallery.removeChild(loadingElement);
+                isLoading = false;
+            }
+        }
+
+        // Render photos to DOM
+        function renderPhotos(photos) {
+            photos.forEach(photo => {
+                if (photo.thumbnailUrl) { // Ensure the thumbnailUrl exists
+                    const photoCard = document.createElement('div');
+                    photoCard.className = 'photo-card';
+                    photoCard.innerHTML = `
+                        <img src="${photo.thumbnailUrl}" alt="${photo.title}">
+                        <div class="title">${photo.title}</div>
+                    `;
+                    gallery.appendChild(photoCard);
+                } else {
+                    console.warn('Photo missing thumbnailUrl:', photo);
+                }
+            });
+        }
+
+        // Check if user is near the bottom of the page
+        function isNearBottom() {
+            const scrollPosition = window.scrollY + window.innerHeight;
+            const pageHeight = document.documentElement.scrollHeight;
+            return scrollPosition > pageHeight - 200; // Trigger 200px before bottom
+        }
+
+        // Handle scroll event
+        function handleScroll() {
+            if (isNearBottom() && !isLoading && hasMore) {
+                fetchPhotos(currentPage);
+            }
+        }
+
+        // Add scroll event listener
+        window.addEventListener('scroll', handleScroll);
+
+        // Initial load
+        fetchPhotos(currentPage);
+    </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Delete Firebase User</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 40px;
+    }
+
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 70%;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    button {
+      padding: 6px 12px;
+      margin: 4px;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    #message.success {
+      color: green;
+    }
+
+    #message.error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Firebase Users</h1>
+  <div id="message"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="userTableBody">
+      <!-- User rows here -->
+    </tbody>
+  </table>
+
+  <script>
+    const baseURL = "https://getxhired-default-rtdb.firebaseio.com/users";
+
+    async function fetchUsers() {
+      try {
+        const response = await fetch(`${baseURL}.json`);
+        const data = await response.json();
+        const tableBody = document.getElementById("userTableBody");
+        tableBody.innerHTML = "";
+
+        for (let key in data) {
+          const { name, email } = data[key];
+          const row = document.createElement("tr");
+          row.id = key;
+
+          row.innerHTML = `
+            <td>${name}</td>
+            <td>${email}</td>
+            <td>
+              <button onclick="deleteUser('${key}')">Delete</button>
+            </td>
+          `;
+
+          tableBody.appendChild(row);
+        }
+      } catch (err) {
+        showMessage("Failed to fetch users.", "error");
+      }
+    }
+
+    const deleteUser = (key) => {
+      fetch(`https://getxhired-default-rtdb.firebaseio.com/users/${key}.json`, {
+        method: 'DELETE',
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to delete user");
+        }
+        document.getElementById(key).remove(); // Remove row from DOM
+        showMessage("User deleted successfully!", "success");
+      })
+      .catch(error => showMessage("Error deleting user: " + error.message, "error"));
+    };
+
+    function showMessage(msg, type) {
+      const div = document.getElementById("message");
+      div.textContent = msg;
+      div.className = type;
+    }
+
+    fetchUsers();
+  </script>
+</body>
+</html>
