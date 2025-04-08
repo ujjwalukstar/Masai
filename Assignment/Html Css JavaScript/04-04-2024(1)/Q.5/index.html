@@ -10,9 +10,6 @@
     th { background-color: #f2f2f2; }
     input, select { margin: 5px; padding: 5px; }
   </style>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <h1>Novel Library</h1>
@@ -44,12 +41,36 @@
   </table>
 
   <script>
-    // Sample Data (Replace with Firestore data fetch logic if connected to Firebase)
+    // Data from db.json
     const novels = [
-      { title: "Novel A", author: "Author A", price: 100, year: 2019, genre: "Fiction" },
-      { title: "Novel B", author: "Author B", price: 150, year: 2020, genre: "Non-fiction" },
-      { title: "Novel C", author: "Author C", price: 200, year: 2021, genre: "Fantasy" },
-      { title: "Novel D", author: "Author D", price: 120, year: 2022, genre: "Thriller" }
+      {
+        "title": "The Great Adventure",
+        "author": "John Doe",
+        "price": 19.99,
+        "release_year": 2020,
+        "genre": "Adventure"
+      },
+      {
+        "title": "Mystery of the Lost World",
+        "author": "Jane Smith",
+        "price": 15.99,
+        "release_year": 2021,
+        "genre": "Mystery"
+      },
+      {
+        "title": "The Journey Begins",
+        "author": "Mark Johnson",
+        "price": 25.00,
+        "release_year": 2022,
+        "genre": "Fantasy"
+      },
+      {
+        "title": "The Last Escape",
+        "author": "Emily White",
+        "price": 18.50,
+        "release_year": 2019,
+        "genre": "Thriller"
+      }
     ];
 
     // Populate Table with Data
@@ -60,8 +81,8 @@
         const row = `<tr>
           <td>${novel.title}</td>
           <td>${novel.author}</td>
-          <td>${novel.price}</td>
-          <td>${novel.year}</td>
+          <td>${novel.price.toFixed(2)}</td>
+          <td>${novel.release_year}</td>
           <td>${novel.genre}</td>
         </tr>`;
         tableBody.innerHTML += row;
@@ -86,7 +107,7 @@
 
       // Filter by Year
       if (yearFilter) {
-        filteredNovels = filteredNovels.filter(novel => novel.year === parseInt(yearFilter));
+        filteredNovels = filteredNovels.filter(novel => novel.release_year === parseInt(yearFilter));
       }
 
       // Sort by Price
