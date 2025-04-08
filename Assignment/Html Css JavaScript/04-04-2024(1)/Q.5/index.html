@@ -31,6 +31,7 @@
     <option value="asc">Low to High</option>
     <option value="desc">High to Low</option>
   </select>
+  <button onclick="applyFilters()">Apply Filters</button>
 
   <!-- Table -->
   <table id="novelTable">
@@ -42,6 +43,64 @@
     <tbody></tbody>
   </table>
 
-  <script src="main.js"></script>
+  <script>
+    // Sample Data (Replace with Firestore data fetch logic if connected to Firebase)
+    const novels = [
+      { title: "Novel A", author: "Author A", price: 100, year: 2019, genre: "Fiction" },
+      { title: "Novel B", author: "Author B", price: 150, year: 2020, genre: "Non-fiction" },
+      { title: "Novel C", author: "Author C", price: 200, year: 2021, genre: "Fantasy" },
+      { title: "Novel D", author: "Author D", price: 120, year: 2022, genre: "Thriller" }
+    ];
+
+    // Populate Table with Data
+    function displayNovels(data) {
+      const tableBody = document.querySelector("#novelTable tbody");
+      tableBody.innerHTML = ""; // Clear previous rows
+      data.forEach(novel => {
+        const row = `<tr>
+          <td>${novel.title}</td>
+          <td>${novel.author}</td>
+          <td>${novel.price}</td>
+          <td>${novel.year}</td>
+          <td>${novel.genre}</td>
+        </tr>`;
+        tableBody.innerHTML += row;
+      });
+    }
+
+    // Apply Filters
+    function applyFilters() {
+      const searchInput = document.getElementById("searchInput").value.toLowerCase();
+      const yearFilter = document.getElementById("yearFilter").value;
+      const sortPrice = document.getElementById("sortPrice").value;
+
+      let filteredNovels = novels;
+
+      // Filter by Title or Author
+      if (searchInput) {
+        filteredNovels = filteredNovels.filter(novel =>
+          novel.title.toLowerCase().includes(searchInput) ||
+          novel.author.toLowerCase().includes(searchInput)
+        );
+      }
+
+      // Filter by Year
+      if (yearFilter) {
+        filteredNovels = filteredNovels.filter(novel => novel.year === parseInt(yearFilter));
+      }
+
+      // Sort by Price
+      if (sortPrice === "asc") {
+        filteredNovels.sort((a, b) => a.price - b.price);
+      } else if (sortPrice === "desc") {
+        filteredNovels.sort((a, b) => b.price - a.price);
+      }
+
+      displayNovels(filteredNovels);
+    }
+
+    // Initial Display
+    displayNovels(novels);
+  </script>
 </body>
 </html>
