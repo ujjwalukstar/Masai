@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Throttled Image Slider</title>
+    <style>
+        /* CSS styles for layout and design */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+
+        img {
+            width: 600px;
+            height: 400px;
+            object-fit: cover;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #slideNumber {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Slider</h1>
+    <img id="sliderImage" src="https://picsum.photos/600/400?random" alt="Random Image">
+    <div>
+        <button id="prevButton">Previous</button>
+        <button id="nextButton">Next</button>
+    </div>
+    <p id="slideNumber">Slide Number: 1</p>
+
+    <script>
+        // JavaScript code for throttling and slider functionality
+        let slideNumber = 1;
+        let lastClickTime = 0;
+        let clickCount = 0;
+
+        // Function to update the image and slide number
+        function updateImage() {
+            const sliderImage = document.getElementById('sliderImage');
+            const slideNumberDisplay = document.getElementById('slideNumber');
+            sliderImage.src = `https://picsum.photos/600/400?random&t=${Date.now()}`;
+            slideNumberDisplay.textContent = `Slide Number: ${slideNumber}`;
+        }
+
+        // Throttling function
+        function handleThrottle(direction) {
+            const now = Date.now();
+
+            // Count clicks within 1 second
+            if (now - lastClickTime < 1000) {
+                clickCount++;
+                if (clickCount > 3) {
+                    alert("Chill chill, loading it!!");
+                    return;
+                }
+            } else {
+                clickCount = 1; // Reset click count after 1 second
+            }
+
+            if (now - lastClickTime >= 1000) {
+                lastClickTime = now;
+                slideNumber += direction;
+                if (slideNumber < 1) slideNumber = 1; // Prevent going below slide 1
+                updateImage();
+            }
+        }
+
+        // Event listeners for buttons
+        document.getElementById('nextButton').addEventListener('click', () => handleThrottle(1));
+        document.getElementById('prevButton').addEventListener('click', () => handleThrottle(-1));
+    </script>
+</body>
+</html>

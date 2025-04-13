@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        .product-card { border: 1px solid #ccc; padding: 10px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h2>User Dashboard</h2>
+    <button onclick="auth.signOut().then(() => window.location.href = 'login.html')">Logout</button>
+    <h3>Products</h3>
+    <div id="productsList"></div>
+
+    <script>
+        // Check role and redirect if not user
+        const role = localStorage.getItem('userRole');
+        if (role !== 'user') {
+            window.location.href = 'admin-dashboard.html';
+        }
+
+        // Fetch and display products
+        function displayProducts() {
+            const productsList = document.getElementById('productsList');
+            productsList.innerHTML = '';
+            db.ref('products').once('value', (snapshot) => {
+                const products = snapshot.val();
+                for (let id in products) {
+                    const product = products[id];
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <img src="${product.image}" width="100" alt="${product.title}">
+                        <h4>${product.title}</h4>
+                        <p>Price: $${product.price}</p>
+                    `;
+                    productsList.appendChild(card);
+                }
+            });
+        }
+
+        // Initial load
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                displayProducts();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>

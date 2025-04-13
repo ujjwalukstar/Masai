@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f9f9f9; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        h1 { color: #333; }
+        form { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); }
+        input { margin: 10px 0; padding: 10px; width: 300px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"></script>
+</head>
+<body>
+    <h1>Login</h1>
+    <form id="loginForm">
+        <input type="email" id="email" placeholder="Email" required><br>
+        <input type="password" id="password" placeholder="Password" required><br>
+        <button type="submit">Login</button>
+    </form>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEnrGu19aWDR5n1lTX2WB0qfKWW9_RBa4",
+           authDomain: "novel-a4d49.firebaseapp.com",
+           databaseURL: "https://novel-a4d49-default-rtdb.firebaseio.com", 
+           projectId: "novel-a4d49", 
+           storageBucket: "novel-a4d49.firebasestorage.app", 
+           messagingSenderId: "940966974419", 
+           appId: "1:940966974419:web:fbd477ef3c8fbb9af59526"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        document.getElementById('loginForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            db.ref('users').once('value').then((snapshot) => {
+                const users = snapshot.val();
+                let isAuthenticated = false;
+
+                for (let userId in users) {
+                    const user = users[userId];
+                    if (user.email === email && user.password === password) {
+                        isAuthenticated = true;
+                        sessionStorage.setItem('isLoggedIn', email);
+                        break;
+                    }
+                }
+
+                if (isAuthenticated) {
+                    window.location.href = "dashboard.html";
+                } else {
+                    alert("Wrong credentials! Try again.");
+                }
+            }).catch((error) => {
+                console.error("Error:", error);
+            });
+        });
+    </script>
+</body>
+</html>

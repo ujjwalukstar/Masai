@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rick and Morty Wiki</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-light">
+    <header class="container text-center my-4">
+        <h1>Rick and Morty Character Wiki</h1>
+        <button id="themeToggle" class="btn btn-secondary">Toggle Dark Mode</button>
+        <button id="randomCharacter" class="btn btn-primary">Random Character</button>
+    </header>
+    <main class="container">
+        <div id="characterGrid" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"></div>
+        <div class="d-flex justify-content-between my-4">
+            <button id="prevButton" class="btn btn-primary" disabled>Previous</button>
+            <button id="nextButton" class="btn btn-primary">Next</button>
+        </div>
+    </main>
+    <footer class="container text-center py-3">
+        <p id="clock"></p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

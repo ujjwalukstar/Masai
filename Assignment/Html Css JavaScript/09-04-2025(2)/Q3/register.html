@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <!-- Load Firebase SDKs first -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <!-- Load config after SDKs -->
+    <script src="firebase-config.js"></script>
+</head>
+<body>
+    <h2>Register</h2>
+    <form id="registerForm">
+        <input type="email" id="email" placeholder="Email" required><br><br>
+        <input type="password" id="password" placeholder="Password" required><br><br>
+        <select id="role" required>
+            <option value="" disabled selected>Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+        </select><br><br>
+        <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+
+    <script>
+        // Ensure Firebase is initialized
+        if (!firebase.auth) {
+            alert('Firebase Authentication failed to load. Please try again later.');
+            throw new Error('Firebase auth not initialized');
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+
+            try {
+                // Use firebase.auth() directly or ensure auth is accessible
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Store user role in Firebase Realtime Database
+                await firebase.database().ref('users/' + user.uid).set({
+                    email: email,
+                    role: role
+                });
+
+                alert('Registration successful!');
+                window.location.href = 'login.html';
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

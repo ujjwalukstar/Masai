@@ -1,0 +1,24 @@
+body.dark {
+    background-color: #222;
+    color: #fff;
+}
+body.dark .card {
+    background-color: #333;
+    color: #fff;
+}
+body.dark .btn-primary {
+    background-color: #007bff;
+}
+body.dark .btn-secondary {
+    background-color: #6c757d;
+}
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+footer {
+    border-top: 1px solid #ccc;
+}
+body.dark footer {
+    border-top: 1px solid #666;
+}
