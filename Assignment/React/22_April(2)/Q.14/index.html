@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React CDN Example</title>
+    <!-- React and ReactDOM CDN -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+    <!-- Babel CDN for JSX support -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      // ListComponent to display the list of items
+      function ListComponent({ items }) {
+        return (
+          <div>
+            <h2>Item List</h2>
+            {items.length > 0 &&
+              items.map((item, index) => <p key={index}>{item}</p>)}
+          </div>
+        );
+      }
+
+      // App component to pass the items prop to ListComponent
+      function App() {
+        const items = ["Item 1", "Item 2", "Item 3"];
+        return (
+          <div>
+            <h1>My App</h1>
+            <ListComponent items={items} />
+          </div>
+        );
+      }
+
+      // Render the App component
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React SPA</title>
+  <!-- Load React and ReactDOM from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <!-- Load Babel for JSX transformation -->
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.22.9/babel.min.js"></script>
+  <!-- Load Tailwind CSS for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    function Navbar({ setActivePage }) {
+      return (
+        <nav className="bg-blue-600 p-4">
+          <ul className="flex space-x-6 justify-center text-white">
+            <li>
+              <button
+                className="hover:underline"
+                onClick={() => setActivePage('home')}
+              >
+                Home
+              </button>
+            </li>
+            <li>
+              <button
+                className="hover:underline"
+                onClick={() => setActivePage('about')}
+              >
+                About
+              </button>
+            </li>
+            <li>
+              <button
+                className="hover:underline"
+                onClick={() => setActivePage('contact')}
+              >
+                Contact
+              </button>
+            </li>
+          </ul>
+        </nav>
+      );
+    }
+
+    function Home() {
+      return (
+        <div className="min-h-screen bg-blue-100 flex items-center justify-center">
+          <h1 className="text-4xl font-bold text-blue-800">Welcome to Home</h1>
+        </div>
+      );
+    }
+
+    function About() {
+      return (
+        <div className="min-h-screen bg-green-100 flex items-center justify-center">
+          <h1 className="text-4xl font-bold text-green-800">About Us</h1>
+        </div>
+      );
+    }
+
+    function Contact() {
+      return (
+        <div className="min-h-screen bg-yellow-100 flex items-center justify-center">
+          <h1 className="text-4xl font-bold text-yellow-800">Contact Us</h1>
+        </div>
+      );
+    }
+
+    function App() {
+      const [activePage, setActivePage] = React.useState('home');
+
+      return (
+        <div>
+          <Navbar setActivePage={setActivePage} />
+          {activePage === 'home' && <Home />}
+          {activePage === 'about' && <About />}
+          {activePage === 'contact' && <Contact />}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
