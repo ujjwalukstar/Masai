@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feedback Board</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+    <script type="text/babel">
+      const firebaseConfig = {
+        apiKey: "AIzaSyB5D-exTVYca9RIqP7JX5u_DLLYLpUKsGA",
+        authDomain: "feedback-board-a826d.firebaseapp.com",
+        databaseURL: "https://feedback-board-a826d-default-rtdb.firebaseio.com",
+        projectId: "feedback-board-a826d",
+        storageBucket: "feedback-board-a826d.firebasestorage.app",
+        messagingSenderId: "557805398176",
+        appId: "1:557805398176:web:b03f3d012d088a2bca41c5",
+        measurementId: "G-ZH21SDCMQE",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+
+      const ThemeToggle = ({ theme, toggleTheme }) => (
+        <button onClick={toggleTheme} className="theme-toggle">
+          Switch to {theme === "light" ? "Dark" : "Light"} Mode
+        </button>
+      );
+
+      const FeedbackForm = ({ onSubmit }) => {
+        const [name, setName] = React.useState("");
+        const [email, setEmail] = React.useState("");
+        const [comment, setComment] = React.useState("");
+        const [message, setMessage] = React.useState("");
+
+        const handleSubmit = async (e) => {
+          e.preventDefault();
+          if (!name || !email || !comment) {
+            setMessage("Please fill all fields.");
+            return;
+          }
+          const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailPattern.test(email)) {
+            setMessage("Invalid email format.");
+            return;
+          }
+          const feedback = { name, email, comment, timestamp: Date.now() };
+          await onSubmit(feedback);
+          setName("");
+          setEmail("");
+          setComment("");
+          setMessage("Feedback submitted successfully!");
+          setTimeout(() => setMessage(""), 3000);
+        };
+
+        return (
+          <form onSubmit={handleSubmit} className="feedback-form">
+            <h2>Submit Feedback</h2>
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <textarea
+              placeholder="Comment"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            ></textarea>
+            <button type="submit">Submit</button>
+            {message && <p className="confirmation">{message}</p>}
+          </form>
+        );
+      };
+
+      const FeedbackItem = ({ feedback, onDelete }) => (
+        <div className="feedback-item">
+          <h3>{feedback.name}</h3>
+          <p>{feedback.comment}</p>
+          <small>{feedback.email}</small>
+          <button onClick={() => onDelete(feedback.id)}>Delete</button>
+        </div>
+      );
+
+      const FeedbackList = ({ feedbacks, onDelete }) => (
+        <div className="feedback-list">
+          {feedbacks.map((fb) => (
+            <FeedbackItem key={fb.id} feedback={fb} onDelete={onDelete} />
+          ))}
+        </div>
+      );
+
+      const App = () => {
+        const [feedbacks, setFeedbacks] = React.useState([]);
+        const [theme, setTheme] = React.useState(
+          localStorage.getItem("theme") || "light"
+        );
+
+        React.useEffect(() => {
+          const feedbackRef = database.ref("feedbacks");
+          feedbackRef.on("value", (snapshot) => {
+            const data = snapshot.val();
+            const loadedFeedbacks = [];
+            for (let id in data) {
+              loadedFeedbacks.push({ id, ...data[id] });
+            }
+            setFeedbacks(loadedFeedbacks.reverse());
+          });
+        }, []);
+
+        const addFeedback = async (feedback) => {
+          await database.ref("feedbacks").push(feedback);
+        };
+
+        const deleteFeedback = async (id) => {
+          await database.ref("feedbacks/" + id).remove();
+        };
+
+        const toggleTheme = () => {
+          const newTheme = theme === "light" ? "dark" : "light";
+          setTheme(newTheme);
+          localStorage.setItem("theme", newTheme);
+        };
+
+        React.useEffect(() => {
+          document.body.className = theme;
+        }, [theme]);
+
+        return (
+          <div className="app">
+            <header className="header">
+              <h1>Feedback Board</h1>
+              <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+            </header>
+            <main className="main-grid">
+              <FeedbackForm onSubmit={addFeedback} />
+              <FeedbackList feedbacks={feedbacks} onDelete={deleteFeedback} />
+            </main>
+          </div>
+        );
+      };
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>
