@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debugged To-Do List</title>
+  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.22.9/Babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root" className="flex justify-center items-center min-h-screen bg-gray-100"></div>
+  <script type="text/babel">
+    console.log('Babel script loaded');
+
+    const TodoList = () => {
+      const [tasks, setTasks] = React.useState([]);
+      const [newTask, setNewTask] = React.useState('');
+      const [error, setError] = React.useState('');
+
+      const handleAddTask = () => {
+        if (!newTask.trim()) {
+          setError('Task cannot be empty');
+          return;
+        }
+        setTasks([...tasks, { id: Date.now(), text: newTask.trim(), completed: false }]);
+        setNewTask('');
+        setError('');
+      };
+
+      const handleToggleComplete = (id) => {
+        setTasks(
+          tasks.map((task) =>
+            task.id === id ? { ...task, completed: !task.completed } : task
+          )
+        );
+      };
+
+      const handleDeleteTask = (id) => {
+        setTasks(tasks.filter((task) => task.id !== id));
+      };
+
+      return (
+        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold mb-4 text-center">To-Do List</h1>
+          <div className="mb-4">
+            <label htmlFor="task" className="block text-sm font-medium text-gray-700">
+              New Task
+            </label>
+            <input
+              id="task"
+              type="text"
+              value={newTask}
+              onChange={(e) => setNewTask(e.target.value)}
+              className="mt-1 block w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter a task"
+            />
+          </div>
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          <button
+            onClick={handleAddTask}
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition mb-4"
+          >
+            Add Task
+          </button>
+          <ul className="space-y-2">
+            {tasks.map((task) => (
+              <li
+                key={task.id}
+                className="flex items-center justify-between bg-gray-50 p-2 rounded"
+              >
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={task.completed}
+                    onChange={() => handleToggleComplete(task.id)}
+                    className="mr-2"
+                  />
+                  <span
+                    className={`${
+                      task.completed ? 'line-through text-gray-500' : 'text-gray-800'
+                    }`}
+                  >
+                    {task.text}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleDeleteTask(task.id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+          {tasks.length === 0 && (
+            <p className="text-center text-gray-500 mt-4">No tasks in the list</p>
+          )}
+        </div>
+      );
+    };
+
+    try {
+      console.log('Attempting to render React component');
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<TodoList />);
+      console.log('Render successful');
+    } catch (error) {
+      console.error('Rendering error:', error);
+    }
+  </script>
+</body>
+</html>

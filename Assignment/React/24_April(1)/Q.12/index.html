@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Counter with Step Control</title>
+  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.22.9/Babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root" class="flex justify-center items-center h-screen bg-gray-100"></div>
+  <script type="text/babel">
+    const Counter = () => {
+      const [count, setCount] = React.useState(0);
+      const [step, setStep] = React.useState(1);
+
+      const handleIncrease = () => {
+        setCount(count + step);
+      };
+
+      const handleDecrease = () => {
+        setCount(Math.max(0, count - step));
+      };
+
+      const handleStepChange = (e) => {
+        const value = parseInt(e.target.value);
+        setStep(isNaN(value) || value <= 0 ? 1 : value);
+      };
+
+      return (
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-bold">Counter: {count}</h1>
+          <div className="flex justify-center space-x-4">
+            <button
+              onClick={handleIncrease}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+            >
+              Increase
+            </button>
+            <button
+              onClick={handleDecrease}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+            >
+              Decrease
+            </button>
+          </div>
+          <div>
+            <label htmlFor="step" className="mr-2">Step:</label>
+            <input
+              id="step"
+              type="number"
+              min="1"
+              value={step}
+              onChange={handleStepChange}
+              className="border rounded px-2 py-1 w-20 text-center"
+            />
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<Counter />);
+  </script>
+</body>
+</html>

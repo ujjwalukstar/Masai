@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Task Manager</title>
+  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.22.9/Babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root" className="flex justify-center items-center min-h-screen bg-gray-100"></div>
+  <script type="text/babel">
+    console.log('Babel script loaded');
+
+    const TaskManager = () => {
+      const [tasks, setTasks] = React.useState([]);
+      const [title, setTitle] = React.useState('');
+      const [priority, setPriority] = React.useState('Medium');
+      const [filterPriority, setFilterPriority] = React.useState('All');
+      const [filterStatus, setFilterStatus] = React.useState('All');
+      const [error, setError] = React.useState('');
+
+      const priorityOrder = { High: 3, Medium: 2, Low: 1 };
+
+      const handleAddTask = () => {
+        if (!title.trim()) {
+          setError('Task title cannot be empty');
+          return;
+        }
+        const newTask = {
+          id: Date.now(),
+          title: title.trim(),
+          priority,
+          completed: false,
+        };
+        setTasks([...tasks, newTask]);
+        setTitle('');
+        setPriority('Medium');
+        setError('');
+      };
+
+      const handleToggleComplete = (id) => {
+        setTasks(
+          tasks.map((task) =>
+            task.id === id ? { ...task, completed: !task.completed } : task
+          )
+        );
+      };
+
+      const handleDeleteTask = (id) => {
+        setTasks(tasks.filter((task) => task.id !== id));
+      };
+
+      const getFilteredTasks = () => {
+        let filteredTasks = [...tasks];
+        
+        // Filter by priority
+        if (filterPriority !== 'All') {
+          filteredTasks = filteredTasks.filter(
+            (task) => task.priority === filterPriority
+          );
+        }
+
+        // Filter by completion status
+        if (filterStatus === 'Completed') {
+          filteredTasks = filteredTasks.filter((task) => task.completed);
+        } else if (filterStatus === 'Incomplete') {
+          filteredTasks = filteredTasks.filter((task) => !task.completed);
+        }
+
+        // Sort by priority (High > Medium > Low)
+        return filteredTasks.sort(
+          (a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]
+        );
+      };
+
+      return (
+        <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold mb-4 text-center">Task Manager</h1>
+
+          {/* Task Input */}
+          <div className="mb-4">
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+              Task Title
+            </label>
+            <input
+              id="title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="mt-1 block w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter task title"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="priority" className="block text-sm font-medium text-gray-700">
+              Priority
+            </label>
+            <select
+              id="priority"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className="mt-1 block w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          <button
+            onClick={handleAddTask}
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition mb-6"
+          >
+            Add Task
+          </button>
+
+          {/* Filters */}
+          <div className="mb-6 flex flex-col sm:flex-row sm:space-x-4">
+            <div className="flex-1">
+              <label htmlFor="filterPriority" className="block text-sm font-medium text-gray-700">
+                Filter by Priority
+              </label>
+              <select
+                id="filterPriority"
+                value={filterPriority}
+                onChange={(e) => setFilterPriority(e.target.value)}
+                className="mt-1 block w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="All">All</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+            <div className="flex-1 mt-4 sm:mt-0">
+              <label htmlFor="filterStatus" className="block text-sm font-medium text-gray-700">
+                Filter by Status
+              </label>
+              <select
+                id="filterStatus"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="mt-1 block w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="All">All</option>
+                <option value="Completed">Completed</option>
+                <option value="Incomplete">Incomplete</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Task List */}
+          <ul className="space-y-2">
+            {getFilteredTasks().map((task) => (
+              <li
+                key={task.id}
+                className={`flex items-center justify-between p-2 rounded ${
+                  task.priority === 'High' ? 'bg-red-100 border-l-4 border-red-500' : 'bg-gray-50'
+                }`}
+              >
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={task.completed}
+                    onChange={() => handleToggleComplete(task.id)}
+                    className="mr-2"
+                  />
+                  <span
+                    className={`${
+                      task.completed ? 'line-through text-gray-500' : 'text-gray-800'
+                    }`}
+                  >
+                    {task.title} ({task.priority})
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleDeleteTask(task.id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+          {getFilteredTasks().length === 0 && (
+            <p className="text-center text-gray-500 mt-4">No tasks match the current filters</p>
+          )}
+        </div>
+      );
+    };
+
+    try {
+      console.log('Attempting to render React component');
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<TaskManager />);
+      console.log('Render successful');
+    } catch (error) {
+      console.error('Rendering error:', error);
+    }
+  </script>
+</body>
+</html>
