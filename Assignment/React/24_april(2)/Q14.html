@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>React Task List with Axios (CDN)</title>
+  <!-- React and ReactDOM via CDN -->
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+  <!-- Babel for JSX support in the browser -->
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <!-- Axios via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    .error { color: #b00020; margin-bottom: 1em; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    function TaskList() {
+      const [tasks, setTasks] = React.useState([]);
+      const [error, setError] = React.useState(null);
+
+      const fetchData = () => {
+        axios.get("https://dashboard-da4ae-default-rtdb.firebaseio.com/tasks.json")
+          .then((response) => {
+            if (response.data) {
+              // Convert Firebase object to array with id
+              const tasksArray = Object.keys(response.data).map(key => ({
+                id: key,
+                ...response.data[key]
+              }));
+              setTasks(tasksArray);
+              setError(null);
+            } else {
+              setTasks([]);
+              setError("No tasks found.");
+            }
+          })
+          .catch((err) => {
+            setError("Failed to load tasks. Please try again later.");
+            setTasks([]);
+            console.error("Error fetching tasks:", err);
+          });
+      };
+
+      React.useEffect(() => {
+        fetchData();
+      }, []);
+
+      return (
+        <div>
+          <h1>Task List</h1>
+          {error && <div className="error">{error}</div>}
+          <ul>
+            {tasks.map(task => (
+              <li key={task.id}>{task.name}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<TaskList />, document.getElementById('root'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uncontrolled Form Fundamentals</title>
+  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.22.9/Babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root" className="flex justify-center items-center min-h-screen bg-gray-100"></div>
+  <script type="text/babel">
+    console.log('Babel script loaded');
+
+    const UncontrolledForm = () => {
+      const inputRef = React.useRef(null);
+
+      const handleSubmit = () => {
+        console.log('Submit button clicked');
+        const value = inputRef.current.value.trim();
+        if (value) {
+          console.log('Submission successful, value:', value);
+          alert(`Submitted text: ${value}`);
+          inputRef.current.value = ''; // Clear input after submission
+        } else {
+          console.log('No value entered');
+          alert('Please enter some text');
+        }
+      };
+
+      return (
+        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold mb-4 text-center">Uncontrolled Form</h1>
+          <div className="mb-4">
+            <label htmlFor="textInput" className="block text-sm font-medium text-gray-700">
+              Text Input
+            </label>
+            <input
+              id="textInput"
+              type="text"
+              ref={inputRef}
+              className="mt-1 block w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter text"
+              onChange={() => console.log('Input changed:', inputRef.current.value)}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            Submit
+          </button>
+        </div>
+      );
+    };
+
+    try {
+      console.log('Attempting to render React component');
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<UncontrolledForm />);
+      console.log('Render successful');
+    } catch (error) {
+      console.error('Rendering error:', error);
+    }
+  </script>
+</body>
+</html>

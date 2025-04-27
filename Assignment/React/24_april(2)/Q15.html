@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management System</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+  <!-- React and React DOM -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <!-- Babel for JSX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.21.2/babel.min.js"></script>
+  <!-- Axios for HTTP requests -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script>
+  <style>
+    .loading {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .error-message {
+      color: #dc3545;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    .user-card {
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // Create a MockAPI for development use
+    // This eliminates network errors during development and testing
+    class MockAPI {
+      constructor() {
+        // Initialize with sample data
+        this.users = {
+          'user1': { name: 'John Doe', email: 'john@example.com' },
+          'user2': { name: 'Jane Smith', email: 'jane@example.com' },
+          'user3': { name: 'Mike Johnson', email: 'mike@example.com' }
+        };
+        this.lastId = 3;
+      }
+
+      // Simulate GET request
+      async get() {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({ data: this.users });
+          }, 500); // Simulate network delay
+        });
+      }
+
+      // Simulate POST request
+      async post(url, data) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            const id = `user${++this.lastId}`;
+            this.users[id] = data;
+            resolve({ data: { name: id } });
+          }, 500);
+        });
+      }
+
+      // Simulate PATCH request
+      async patch(url, data) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            const id = url.split('/').filter(Boolean).pop().replace('.json', '');
+            this.users[id] = { ...this.users[id], ...data };
+            resolve({ data: null });
+          }, 500);
+        });
+      }
+
+      // Simulate DELETE request
+      async delete(url) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            const id = url.split('/').filter(Boolean).pop().replace('.json', '');
+            delete this.users[id];
+            resolve({ data: null });
+          }, 500);
+        });
+      }
+    }
+
+    // Main App Component
+    const App = () => {
+      const [users, setUsers] = React.useState([]);
+      const [loading, setLoading] = React.useState(true);
+      const [error, setError] = React.useState(null);
+      const [currentUser, setCurrentUser] = React.useState({ id: '', name: '', email: '' });
+      const [isEditing, setIsEditing] = React.useState(false);
+      const [nameError, setNameError] = React.useState('');
+      const [emailError, setEmailError] = React.useState('');
+      const [useFirebase, setUseFirebase] = React.useState(false);
+      const [firebaseUrl, setFirebaseUrl] = React.useState('');
+
+      // Create a mockAPI instance
+      const mockAPI = React.useMemo(() => new MockAPI(), []);
+
+      // Initialize the API client
+      const apiClient = React.useMemo(() => {
+        return {
+          get: (url) => useFirebase ? axios.get(url) : mockAPI.get(url),
+          post: (url, data) => useFirebase ? axios.post(url, data) : mockAPI.post(url, data),
+          patch: (url, data) => useFirebase ? axios.patch(url, data) : mockAPI.patch(url, data),
+          delete: (url) => useFirebase ? axios.delete(url) : mockAPI.delete(url)
+        };
+      }, [mockAPI, useFirebase]);
+
+      // Handle Firebase URL change
+      const handleFirebaseUrlChange = (e) => {
+        setFirebaseUrl(e.target.value);
+      };
+
+      // Toggle between Mock API and Firebase
+      const toggleAPI = () => {
+        if (!useFirebase && !firebaseUrl.trim()) {
+          alert("Please enter a Firebase URL first");
+          return;
+        }
+        setUseFirebase(!useFirebase);
+        // Refetch users with the new API
+        fetchUsers();
+      };
+
+      // Fetch users on component mount
+      React.useEffect(() => {
+        fetchUsers();
+      }, []);
+
+      // Fetch all users
+      const fetchUsers = async () => {
+        setLoading(true);
+        try {
+          const url = useFirebase ? `${firebaseUrl}.json` : '';
+          const response = await apiClient.get(url);
+          
+          if (response.data) {
+            // Transform object to array with id
+            const userArray = Object.keys(response.data).map(key => ({
+              id: key,
+              ...response.data[key]
+            }));
+            setUsers(userArray);
+          } else {
+            setUsers([]);
+          }
+          setError(null);
+        } catch (err) {
+          setError("Failed to fetch users. " + (useFirebase ? "Check your Firebase URL or connection." : ""));
+          console.error("Error fetching users:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      // Handle form input changes
+      const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setCurrentUser({ ...currentUser, [name]: value });
+        
+        // Clear validation errors when user types
+        if (name === 'name') setNameError('');
+        if (name === 'email') setEmailError('');
+      };
+
+      // Validate form inputs
+      const validateForm = () => {
+        let isValid = true;
+        
+        // Validate name
+        if (!currentUser.name.trim()) {
+          setNameError('Name is required');
+          isValid = false;
+        }
+        
+        // Validate email
+        if (!currentUser.email.trim()) {
+          setEmailError('Email is required');
+          isValid = false;
+        } else {
+          // Simple email validation
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(currentUser.email)) {
+            setEmailError('Please enter a valid email address');
+            isValid = false;
+          }
+        }
+        
+        return isValid;
+      };
+
+      // Add a new user
+      const addUser = async (e) => {
+        e.preventDefault();
+        
+        if (!validateForm()) return;
+        
+        setLoading(true);
+        try {
+          const url = useFirebase ? `${firebaseUrl}.json` : '';
+          const response = await apiClient.post(url, {
+            name: currentUser.name,
+            email: currentUser.email
+          });
+          
+          // Add new user to the users array with the generated ID
+          setUsers([...users, { 
+            id: response.data.name, 
+            name: currentUser.name, 
+            email: currentUser.email 
+          }]);
+          
+          // Reset form
+          setCurrentUser({ id: '', name: '', email: '' });
+          setError(null);
+        } catch (err) {
+          setError("Failed to add user. Please try again.");
+          console.error("Error adding user:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      // Edit existing user
+      const editUser = async (e) => {
+        e.preventDefault();
+        
+        if (!validateForm()) return;
+        
+        setLoading(true);
+        try {
+          const url = useFirebase ? `${firebaseUrl}/${currentUser.id}.json` : `/${currentUser.id}.json`;
+          await apiClient.patch(url, {
+            name: currentUser.name,
+            email: currentUser.email
+          });
+          
+          // Update users array
+          setUsers(users.map(user => 
+            user.id === currentUser.id 
+              ? { ...user, name: currentUser.name, email: currentUser.email } 
+              : user
+          ));
+          
+          // Reset form and editing state
+          setCurrentUser({ id: '', name: '', email: '' });
+          setIsEditing(false);
+          setError(null);
+        } catch (err) {
+          setError("Failed to update user. Please try again.");
+          console.error("Error updating user:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      // Delete a user
+      const deleteUser = async (id) => {
+        if (window.confirm("Are you sure you want to delete this user?")) {
+          setLoading(true);
+          try {
+            const url = useFirebase ? `${firebaseUrl}/${id}.json` : `/${id}.json`;
+            await apiClient.delete(url);
+            
+            // Remove user from the users array
+            setUsers(users.filter(user => user.id !== id));
+            setError(null);
+          } catch (err) {
+            setError("Failed to delete user. Please try again.");
+            console.error("Error deleting user:", err);
+          } finally {
+            setLoading(false);
+          }
+        }
+      };
+
+      // Set up editing mode for a user
+      const setupEditUser = (user) => {
+        setCurrentUser({
+          id: user.id,
+          name: user.name,
+          email: user.email
+        });
+        setIsEditing(true);
+        
+        // Scroll to form
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      };
+
+      // Cancel editing
+      const cancelEdit = () => {
+        setCurrentUser({ id: '', name: '', email: '' });
+        setIsEditing(false);
+        setNameError('');
+        setEmailError('');
+      };
+
+      return (
+        <div className="container mt-4 mb-5">
+          <h1 className="text-center mb-4">User Management System</h1>
+          
+          {/* API Selection */}
+          <div className="card mb-4">
+            <div className="card-header bg-info text-white">
+              <h4>Data Source Configuration</h4>
+            </div>
+            <div className="card-body">
+              <div className="mb-3">
+                <label htmlFor="firebaseUrl" className="form-label">Firebase Database URL (optional)</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="firebaseUrl"
+                  value={firebaseUrl}
+                  onChange={handleFirebaseUrlChange}
+                  placeholder="https://your-project-id.firebaseio.com/users"
+                  disabled={useFirebase}
+                />
+                <div className="form-text">
+                  Leave empty to use mock data for testing.
+                </div>
+              </div>
+              <div className="form-check mb-3">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="useFirebase"
+                  checked={useFirebase}
+                  onChange={toggleAPI}
+                />
+                <label className="form-check-label" htmlFor="useFirebase">
+                  Use Firebase (otherwise mock data will be used)
+                </label>
+              </div>
+              <div className="alert alert-primary">
+                <strong>Current Mode:</strong> {useFirebase ? "Firebase" : "Mock Data (for development)"}
+              </div>
+            </div>
+          </div>
+          
+          {/* Form for Adding/Editing Users */}
+          <div className="card mb-4">
+            <div className="card-header bg-primary text-white">
+              <h3>{isEditing ? 'Edit User' : 'Add New User'}</h3>
+            </div>
+            <div className="card-body">
+              <form onSubmit={isEditing ? editUser : addUser}>
+                <div className="mb-3">
+                  <label htmlFor="name" className="form-label">Name</label>
+                  <input
+                    type="text"
+                    className={`form-control ${nameError ? 'is-invalid' : ''}`}
+                    id="name"
+                    name="name"
+                    value={currentUser.name}
+                    onChange={handleInputChange}
+                    placeholder="Enter name"
+                  />
+                  {nameError && <div className="error-message">{nameError}</div>}
+                </div>
+                
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label">Email</label>
+                  <input
+                    type="email"
+                    className={`form-control ${emailError ? 'is-invalid' : ''}`}
+                    id="email"
+                    name="email"
+                    value={currentUser.email}
+                    onChange={handleInputChange}
+                    placeholder="Enter email"
+                  />
+                  {emailError && <div className="error-message">{emailError}</div>}
+                </div>
+                
+                <div className="d-flex gap-2">
+                  <button type="submit" className="btn btn-primary">
+                    {isEditing ? 'Update User' : 'Add User'}
+                  </button>
+                  {isEditing && (
+                    <button type="button" className="btn btn-secondary" onClick={cancelEdit}>
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+          </div>
+          
+          {/* Display error message if exists */}
+          {error && (
+            <div className="alert alert-danger" role="alert">
+              {error}
+            </div>
+          )}
+          
+          {/* Loading indicator */}
+          {loading && (
+            <div className="loading">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          )}
+          
+          {/* User List */}
+          <div className="card">
+            <div className="card-header bg-secondary text-white">
+              <h3>User List</h3>
+            </div>
+            <div className="card-body">
+              {users.length === 0 && !loading ? (
+                <p className="text-center">No users found. Add a new user above.</p>
+              ) : (
+                <div className="row">
+                  {users.map(user => (
+                    <div className="col-md-6 col-lg-4" key={user.id}>
+                      <div className="card user-card">
+                        <div className="card-body">
+                          <h5 className="card-title">{user.name}</h5>
+                          <p className="card-text">{user.email}</p>
+                          <div className="action-buttons">
+                            <button 
+                              className="btn btn-sm btn-outline-primary" 
+                              onClick={() => setupEditUser(user)}
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              className="btn btn-sm btn-outline-danger" 
+                              onClick={() => deleteUser(user.id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Using createRoot for React 18
+    const rootElement = document.getElementById('root');
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(<App />);
+  </script>
+</body>
+</html>
