@@ -1,0 +1,36 @@
+.movies {
+    padding: 20px;
+  }
+  
+  .movies h1 {
+    color: #333;
+    margin-bottom: 30px;
+  }
+  
+  .no-movies {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+    padding: 40px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .movies-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  @media (min-width: 768px) {
+    .movies-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .movies-list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
