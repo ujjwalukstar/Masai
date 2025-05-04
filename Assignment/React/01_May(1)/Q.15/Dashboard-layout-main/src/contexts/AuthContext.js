@@ -1,0 +1,17 @@
+import { createContext, useState, useCallback } from 'react';
+
+export const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const toggleAuth = useCallback(() => {
+    setIsLoggedIn(prev => !prev);
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ isLoggedIn, toggleAuth }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
